@@ -1,0 +1,8 @@
+bike<-read.csv("train.csv")
+str(bike)
+bike$datetime<-as.character(bike$datetime)
+bike$date <-sapply(strsplit(bike$datetime,' '), "[", 1)
+bike$date<-as.Date(bike$date)
+bike$time <-sapply(strsplit(bike$datetime,' '), "[", 2)
+bike$hour<-sapply(strsplit(bike$time,':'), "[", 1)
+bike$hour<-as.numeric(bike$hour)
