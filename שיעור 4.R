@@ -19,7 +19,7 @@ pl2<-pl2+geom_bin2d()+scale_fill_gradient(low='green', high="red")
 str(mtcars)
 ca<-ggplot(mtcars,aes( x=wt, y=mpg))
 ca<-ca + geom_point(aes(shape=factor(cyl)), size=5)
- 
+ ca
 str(mpg)
 mpg1<- ggplot(mpg, aes(x=class))                   
 mpg1<- mpg1+ geom_bar(color='blue', fill='light blue')
