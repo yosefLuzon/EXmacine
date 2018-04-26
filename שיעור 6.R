@@ -33,6 +33,7 @@ str(titanic_clean)
 
 titanic_clean$Survived<-factor(titanic_clean$Survived)
 titanic_clean$Pclass<-factor(titanic_clean$Pclass)
+str(titanic_clean)
 titanic_clean.train<-sample_frac(titanic_clean, 0.7)
 sid<-as.numeric(rownames(titanic_clean.train))
 titanic_clean.test<-titanic_clean[-sid,]

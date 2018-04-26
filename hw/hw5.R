@@ -164,5 +164,21 @@ adult.income<-sapply(adult.income,imputincomeone)
 adult.income<-factor(adult.income)
 adult_clean$income<-adult.income
 str(adult_clean)
-ggplot(adult_clean,aes(country,fill=factor(income)))+geom_histogram(binwidth = 10)
+
 ggplot(adult_clean,aes(country,fill=factor(income)))+geom_bar()
+ggplot(adult_clean,aes(marital,fill=factor(income)))+geom_bar()
+ggplot(adult_clean,aes(type_employer,fill=factor(income)))+geom_bar()
+#qs7
+str(adult_clean)
+adult_clean.train<-sample_frac(adult_clean, 0.7)
+sid<-as.numeric(rownames(adult_clean.train))
+adult_clean.test<-adult_clean[-sid,]
+#qs8
+log.model<-glm(income ~., family = binomial(link='logit'),adult_clean.train)
+summary(log.model)
+#qs9
+predicted.pro<-predict(log.model, adult_clean.test, type='response')
+predicted.values<-ifelse(predicted.pro>0.5,1,0)
+
+missClassError<-mean(predicted.values!=adult_clean.test$income)
+
