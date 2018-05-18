@@ -45,3 +45,4 @@ predicted.pro<-predict(log.model, titanic_clean.test, type='response')
 predicted.values<-ifelse(predicted.pro>0.5,1,0)
 
 missClassError<-mean(predicted.values!=titanic_clean.test$Survived)
+
