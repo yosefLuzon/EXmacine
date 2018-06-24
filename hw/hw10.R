@@ -32,5 +32,12 @@ pl11
 
 ####
 winetotal11<-kmeans(winetotal[ ,1:12],2, nstart = 10)
-clusplot(winetotal,winetotal11$quality , color=T , shade=T, labels=0, lines=0)
+
+install.packages('cluster')
+library(cluster)
+
+clusplot(winetotal,winetotal11$cluster, color=T, shade=T, labels=0, lines=0)
+
+
+
 

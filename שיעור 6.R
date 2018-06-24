@@ -1,48 +1,78 @@
-titanic<-read.csv("titanic.csv")
-str(titanic)
-install.packages('dplyr')
-library(dplyr)
-install.packages('bindr')
+#Logistic regression titanic example 
+df.titanic <-  read.csv("titanic.csv")
+
+str(df.titanic)
+head(df.titanic)
+summary(df.titanic)
+
+
+#Getting an overview re missing values
 install.packages('Amelia')
 library(Amelia)
-#מוציא מפה שמראה את מצב הDATA
-missmap(titanic, main="Miising Date", col=c('yellow','red'))
-#נישים ממוצע בערכים החסרים
-AgeMissing<-is.na(titanic$Age)
-meanage<-mean(titanic$Age[!AgeMissing])
-#פונקצייה שמכניסה ת הממוצע של הגיל לאיפה שחסר נתונים
-imputage<-function(age){
+missmap(df.titanic, main = "Missing data", col = c('yellow', 'black'))
+
+
+
+#imputing gae with mean 
+ageNotNA <- is.na(df.titanic$Age)
+meanage <- mean(df.titanic$Age[!ageNotNA])
+
+imputeAge <- function(age){
   if(is.na(age)){
-    return(meanage)
-  } else{
-    return(age)
+    return (meanage)
+  } else {
+    return (age)
   }
 }
-#השמה בפועל
-titanic$Age<-sapply(titanic$Age,imputage)
 
-ggplot(titanic, aes(Survived))+geom_bar()
+cleanAge <- sapply(df.titanic$Age, imputeAge)
 
-ggplot(titanic, aes(Age,fill=factor(Survived)))+geom_histogram(binwidth = 10)
-ggplot(titanic, aes(Fare,fill=factor(Survived)))+geom_histogram(binwidth =20)
+df.titanic$Age <- cleanAge
+
+install.packages('ggplot2')
+library(ggplot2)
+
+ggplot(df.titanic, aes(Survived)) + geom_bar()
+
+ggplot(df.titanic, aes(Age, fill = factor(Survived))) + geom_histogram(binwidth = 20)
+
+ggplot(df.titanic, aes(Fare, fill = factor(Survived))) + geom_histogram(binwidth = 50)
+
+ggplot(df.titanic, aes(SibSp, fill = factor(Survived))) + geom_bar(position="fill")
+
+install.packages('dplyr')
+library(dplyr)
+
+df.titanic.clean <- select(df.titanic, -PassengerId, -Name, -Ticket, -Cabin )
+str(df.titanic.clean)
+
+#Turn survived and pcalss into factors
+df.titanic.clean$Survived <- factor(df.titanic.clean$Survived)
+df.titanic.clean$Pclass<- factor(df.titanic.clean$Pclass)
 
 
+#Dividing into test set and training set 
+df.titanic.train<-sample_frac(df.titanic.clean, 0.7)
 
-titanic_clean<-select(titanic,-PassengerId,-Name,-Cabin,-Ticket)
-str(titanic_clean)
+#row numbers in the train set 
+sid<-as.numeric(rownames(df.titanic.train)) # because rownames() returns character
+df.titanic.test<-df.titanic.clean[-sid,]
 
-titanic_clean$Survived<-factor(titanic_clean$Survived)
-titanic_clean$Pclass<-factor(titanic_clean$Pclass)
-str(titanic_clean)
-titanic_clean.train<-sample_frac(titanic_clean, 0.7)
-sid<-as.numeric(rownames(titanic_clean.train))
-titanic_clean.test<-titanic_clean[-sid,]
+#The logistic regression model 
+log.model <- glm(Survived ~ ., family = binomial(link = logit),df.titanic.train)
 
-log.model<-glm(Survived ~., family = binomial(link='logit'),titanic_clean.train)
 summary(log.model)
+#Facors were turned into dummy variables 
 
-predicted.pro<-predict(log.model, titanic_clean.test, type='response')
-predicted.values<-ifelse(predicted.pro>0.5,1,0)
+predicted.probabilities <- predict(log.model,df.titanic.test, type = 'response')
+predicted.values <- ifelse(predicted.probabilities>0.5,1,0)
 
-missClassError<-mean(predicted.values!=titanic_clean.test$Survived)
+#Mean can work on true false as well 
+mean(c(TRUE, FALSE)) #TRUE - 1, FALSE - 0 
+
+misClassError <- mean(predicted.values != df.titanic.test$Survived)
+
+#Confusion matrix
+cm <- table(df.titanic.test$Survived,predicted.probabilities>0.5)
+
 

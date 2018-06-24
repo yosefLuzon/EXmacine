@@ -1,0 +1,27 @@
+str(airquality )
+##1
+miss<-sum(!complete.cases(airquality)) 
+miss
+##2
+Remov_missing<-na.omit(airquality)
+##3
+Ozone_mean <- mean(Remov_missing$Ozone)
+Solar.R_mean <- mean(Remov_missing$Solar.R)
+Wind_mean <- mean(Remov_missing$Wind)
+Temp_mean <- mean(Remov_missing$Temp)
+all_means <-c(Ozone_mean,Solar.R_mean,Wind_mean,Temp_mean)
+
+##4
+avg1<-airquality[airquality$Temp>Temp_mean,]
+
+sort_solr<-airquality[order(airquality$Solar.R),]
+##
+sap<-function(v,z){
+  x=v-z
+  return(x)
+}
+airquality$answer=0
+apply(airquality,6,sap(airquality$Ozone,airquality$Solar.R))
+par(mfcol = c(2,3), mar=rep(2,4))
+plot(Remov_missing$Ozone,Remov_missing$Temp, main="Ozone vs Temp")
+plot(Remov_missing$Solar.R,Remov_missing$Wind, main="Solar.R vs Wind")
