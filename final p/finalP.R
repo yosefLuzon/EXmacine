@@ -1,13 +1,5 @@
----
-  title: "kaggle"
-author: "josef"
-date: "September 14, 2018"
-output:
-  word_document: default
-pdf_document: default
----
-  
-  ```{r}
+
+
 
 library(ggplot2) # Data visualization
 library(readr) 
